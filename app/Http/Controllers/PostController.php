@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class PostController extends Controller {
@@ -93,7 +94,10 @@ class PostController extends Controller {
     }
 
     /**
+     * Show posts by category.
      * 
+     * @param \App\Models\Category $category
+     * @return \Illuminate\Contracts\View 
      */
     public function category(Category $category) {
         $posts = Post::where('category_id', $category->id)
@@ -104,6 +108,24 @@ class PostController extends Controller {
         return view('posts.category', [
             'posts'     => $posts,
             'category'  => $category
+        ]);
+    }
+
+    /**
+     * Show posts by tag.
+     * 
+     * @param \App\Models\Tag $tag
+     * @return \Illuminate\Contracts\View
+     */
+    public function tag(Tag $tag) {
+        $posts = $tag->posts()
+            ->where('status', 2)
+            ->latest('id')
+            ->paginate(4);
+
+        return view('posts.tag', [
+            'posts' => $posts,
+            'tag'   => $tag,
         ]);
     }
 }
